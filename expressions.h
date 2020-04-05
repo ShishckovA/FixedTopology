@@ -37,9 +37,9 @@ class ConstantExpression : public Expression {
 private:
     bool value;
 public:
-    explicit ConstantExpression(int value);;
+    explicit ConstantExpression(int value);
 
-    explicit ConstantExpression(bool value);;
+    explicit ConstantExpression(bool value);
 
     bool evaluate(bool *vars, size_t &key) const override;
 
@@ -54,7 +54,7 @@ class VariableExpression : public Expression {
 private:
     size_t myIndex;
 public:
-    explicit VariableExpression(size_t myIndex);;
+    explicit VariableExpression(size_t myIndex);
 
     bool evaluate(bool *vars, size_t &key) const override;
 
