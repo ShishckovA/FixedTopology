@@ -2,8 +2,8 @@
 // Created by sha43 on 2020-04-04.
 //
 
-#ifndef FIXEDTOPOLOGY_EXPRESSIONS_H
-#define FIXEDTOPOLOGY_EXPRESSIONS_H
+#ifndef FIXEDTOPOLOGY_EXPRESSIONSES_H
+#define FIXEDTOPOLOGY_EXPRESSIONSES_H
 
 #include <string>
 #include <memory>
@@ -112,4 +112,4 @@ ExpressionPtr Or(ExpressionPtr first_argument, ExpressionPtr second_argument);
 ExpressionPtr And(ExpressionPtr first_argument, ExpressionPtr second_argument);
 
 
-#endif //FIXEDTOPOLOGY_EXPRESSIONS_H
+#endif //FIXEDTOPOLOGY_EXPRESSIONSES_H
