@@ -1,9 +1,14 @@
 #include <iostream>
+#include <random>
 #include "expressions.h"
 
 using namespace std;
 
 const int n = 4;
+
+std::random_device device;
+std::mt19937 gen(device());
+std::uniform_int_distribution<int> dist(1, 1u << (1u << unsigned(n)) - 1);
 
 ExpressionPtr build_sdnf(size_t func_num) {
     ExpressionPtr ans;
@@ -36,17 +41,18 @@ ExpressionPtr build_sdnf(size_t func_num) {
     return ans;
 }
 
-int work_with(const ExpressionPtr& function) {
+int work_with(const ExpressionPtr &function) {
     bool got_functions[(1u << (1u << unsigned(n)))];
     bool vars[n];
-    for (bool& val : got_functions) {
+    for (bool &val : got_functions) {
         val = false;
     }
     size_t ans = 0;
     size_t numberOfConnections = function->countConnections();
     for (size_t connectionMask = 0; connectionMask < (1u << numberOfConnections); ++connectionMask) {
         if (connectionMask % 100 == 0) {
-            cout << "\rCurrent function: " << 100. * connectionMask / (1u << numberOfConnections) << "%, and result is already " << ans << "...";
+            cout << "\rCurrent function: " << 100. * connectionMask / (1u << numberOfConnections)
+                 << "%, and result is already " << ans << "...";
             cout.flush();
         }
         size_t func_num = 0;
@@ -68,10 +74,9 @@ int work_with(const ExpressionPtr& function) {
 }
 
 int main() {
-    srand(time(0));
     int maxans = 0;
     while (1) {
-        size_t fnum = rand() % (1 << (1 << n));
+        size_t fnum = dist(gen);
         size_t num_ones = 0;
         for (int i = 0; i < (1 << n); ++i) {
             num_ones += ((fnum) >> i) & 1;
