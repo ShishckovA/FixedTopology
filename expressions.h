@@ -23,7 +23,9 @@ enum TwoArgumentsExpressionType {
 
 class Expression {
 public:
-    virtual bool evaluate(bool *vars) const = 0;
+    virtual bool evaluate(bool *vars, size_t& key) const = 0;
+
+    virtual int countConnections() const = 0;
 
     [[nodiscard]] virtual std::string toString() const = 0;
 
@@ -40,8 +42,12 @@ public:
 
     explicit ConstantExpression(bool value) : value(value) {};
 
-    bool evaluate(bool *vars) const override {
+    bool evaluate(bool *vars, size_t& key) const override {
         return value;
+    }
+
+    int countConnections() const override {
+        return 0;
     }
 
     [[nodiscard]] std::string toString() const override {
@@ -57,13 +63,18 @@ private:
 public:
     explicit VariableExpression(size_t myIndex) : myIndex(myIndex) {};
 
-    bool evaluate(bool *vars) const override {
+    bool evaluate(bool *vars, size_t& key) const override {
         return vars[myIndex];
+    }
+
+    int countConnections() const override {
+        return 0;
     }
 
     [[nodiscard]] std::string toString() const override {
         return "x_" + std::to_string(myIndex);
     }
+
 
     ~VariableExpression() override = default;
 };
@@ -76,12 +87,16 @@ public:
     OneArgumentExpression(OneArgumentExpressionType type, ExpressionPtr argument) : type(type),
                                                                                     argument(std::move(argument)) {}
 
-    bool evaluate(bool *vars) const override {
+    bool evaluate(bool *vars, size_t& key) const override {
         if (type == NOT_EXPRESSION) {
-            return !(argument->evaluate(vars));
+            return !(argument->evaluate(vars, key));
         } else {
             throw NoSuchExpressionType();
         }
+    }
+
+    int countConnections() const override {
+        return argument->countConnections();
     }
 
     [[nodiscard]] std::string toString() const override {
@@ -101,14 +116,28 @@ public:
                            ExpressionPtr second_argument) :
             type(type), first_argument(std::move(fist_argument)), second_argument(std::move(second_argument)) {}
 
-    bool evaluate(bool *vars) const override {
-        if (type == OR_EXPRESSION) {
-            return first_argument->evaluate(vars) || second_argument->evaluate(vars);
-        } else if (type == AND_EXPRESSION) {
-            return first_argument->evaluate(vars) && second_argument->evaluate(vars);
+    bool evaluate(bool *vars, size_t& key) const override {
+//        std::cout << "key" << key % 2 << std::endl;
+        if ((type == OR_EXPRESSION) ^ (key % 2)) {
+//            std::cout << "GOTOOR" << std::endl;
+            key /= 2;
+            bool first_val = first_argument->evaluate(vars, key);
+            bool second_val = second_argument->evaluate(vars, key);
+            return first_val || second_val;
+        } else if ((type == AND_EXPRESSION) ^ (key % 2)) {
+//            std::cout << "GOTOAND" << std::endl;
+            key /= 2;
+            bool first_val = first_argument->evaluate(vars, key);
+            bool second_val = second_argument->evaluate(vars, key);
+            return first_val && second_val;
         } else {
+//            std::cout << "asd" << std::endl;
             throw (NoSuchExpressionType());
         }
+    }
+
+    int countConnections() const override {
+        return first_argument->countConnections() + second_argument->countConnections() + 1;
     }
 
     [[nodiscard]] std::string toString() const override {
