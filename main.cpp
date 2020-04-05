@@ -4,21 +4,21 @@
 
 using namespace std;
 
-const int n = 4;
+const size_t n = 4;
 
 std::random_device device;
 std::mt19937 gen(device());
-std::uniform_int_distribution<int> dist(1, 1u << (1u << unsigned(n)) - 1);
+std::uniform_int_distribution<size_t> dist(1, (1u << (1u << n)) - 1);
 
 ExpressionPtr build_sdnf(size_t func_num) {
     ExpressionPtr ans;
     bool setAns = false;
-    for (size_t set_num = 0; set_num < (1 << n); ++set_num) {
-        if (((func_num >> set_num) & 1) == 0) continue;
+    for (size_t set_num = 0; set_num < (1u << n); ++set_num) {
+        if (((func_num >> set_num) & 1u) == 0) continue;
         ExpressionPtr block[n];
         for (size_t var = 0; var < n; ++var) {
             size_t var_ind = n - var - 1;
-            if ((set_num >> var) & 1) {
+            if ((set_num >> var) & 1u) {
                 block[var_ind] = Variable(var_ind);
             } else {
                 block[var_ind] = Not(Variable(var_ind));
@@ -42,7 +42,7 @@ ExpressionPtr build_sdnf(size_t func_num) {
 }
 
 int work_with(const ExpressionPtr &function) {
-    bool got_functions[(1u << (1u << unsigned(n)))];
+    bool got_functions[(1u << (1u << n))];
     bool vars[n];
     for (bool &val : got_functions) {
         val = false;
@@ -56,7 +56,7 @@ int work_with(const ExpressionPtr &function) {
             cout.flush();
         }
         size_t func_num = 0;
-        for (size_t varsMask = 0; varsMask < (1u << unsigned(n)); ++varsMask) {
+        for (size_t varsMask = 0; varsMask < (1u << n); ++varsMask) {
             size_t connectionMaskCopy = connectionMask;
             for (size_t i = 0; i < n; ++i) {
                 vars[i] = (varsMask >> i) & 1u;
@@ -74,22 +74,22 @@ int work_with(const ExpressionPtr &function) {
 }
 
 int main() {
-    int maxans = 0;
-    while (1) {
-        size_t fnum = dist(gen);
+    int maxAns = 0;
+    while (maxAns < (1u << (1u << n))) {
+        size_t fNum = dist(gen);
         size_t num_ones = 0;
-        for (int i = 0; i < (1 << n); ++i) {
-            num_ones += ((fnum) >> i) & 1;
+        for (size_t i = 0; i < (1u << n); ++i) {
+            num_ones += ((fNum) >> i) & 1u;
         }
         if (num_ones > 8) {
             continue;
         }
-        ExpressionPtr f = build_sdnf(fnum);
+        ExpressionPtr f = build_sdnf(fNum);
         cout << f->toString() << endl;
-        cout << "function number: " << fnum << endl;
+        cout << "function number: " << fNum << endl;
         int ww = work_with(f);
-        if (ww > maxans) {
-            maxans = ww;
+        if (ww > maxAns) {
+            maxAns = ww;
             cout << "New max ans! " << ww << endl << endl << endl;
         }
     }
