@@ -24,7 +24,7 @@ while cur_retry != n_retry:
         print(requests.post(url, params={
             "children": args.children,
             "function": args.function,
-            "function_number": args.function
+            "function_number": args.function_number
         }).text)
 
         break
