@@ -1,13 +1,13 @@
 #include <iostream>
 #include <random>
+#include <time.h>
 #include "expressionses.h"
 
 using namespace std;
 
 const size_t n = 4;
 
-std::random_device device;
-std::mt19937 gen(device());
+std::mt19937 gen(time(0));
 std::uniform_int_distribution<size_t> dist(1, (1u << (1u << n)) - 1);
 
 ExpressionPtr build_sdnf(size_t func_num) {
