@@ -2,6 +2,7 @@ from flask import Flask, request
 import json
 
 app = Flask(__name__)
+host = "192.168.100.9"
 
 
 @app.route('/')
@@ -51,7 +52,8 @@ def read_best_function():
 
 def write_best_function(function_dict):
     bf = read_best_function()
-    if bf["children"] < function_dict["children"]:
+    print("Previous best:", bf)
+    if int(bf["children"]) < int(function_dict["children"]):
         f = open("../BEST_FUNCTION.json", "w")
         f.write(json.dumps(function_dict))
         f.close()
@@ -59,4 +61,4 @@ def write_best_function(function_dict):
     return "Old is better"
 
 
-app.run()
+app.run(host)

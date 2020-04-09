@@ -92,6 +92,12 @@ int main() {
             maxAns = ww;
             cout << "New max ans! " << ww << endl << endl << endl;
         }
+        string command = "python ./server/sender.py --children " + to_string(maxAns) + " --function \"" + f->toString() +
+                "\" --function_number " + to_string(fNum);
+        int result = system(command.c_str());
+        if (result) {
+            cout << "Error while sending, but you can see it in console" << endl;
+        }
     }
     return 0;
 }

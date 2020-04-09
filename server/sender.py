@@ -7,11 +7,11 @@ parser.add_argument("-c", "--children", required=True,
                     help="")
 parser.add_argument("-f", "--function", required=True,
                     help="")
-parser.add_argument("-n", "--function_num", required=True,
+parser.add_argument("-n", "--function_number", required=True,
                     help="")
 
 args = parser.parse_args()
-host = "127.0.0.1"
+host = "192.168.100.9"
 port = "5000"
 url = "http://{}:{}/set".format(host, port)
 
@@ -20,6 +20,7 @@ n_retry = 5
 cur_retry = 0
 while cur_retry != n_retry:
     try:
+        print("Success!")
         print(requests.post(url, params={
             "children": args.children,
             "function": args.function,
@@ -31,3 +32,5 @@ while cur_retry != n_retry:
         print("Caught exception: {}".format(e))
         time.sleep(2)
         cur_retry += 1
+else:
+    exit(1)
