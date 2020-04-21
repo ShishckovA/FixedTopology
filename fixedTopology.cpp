@@ -50,7 +50,7 @@ int work_with(const ExpressionPtr &function) {
     size_t ans = 0;
     size_t id = 0;
     function->markConnections(id);
-    cout << "Operations togo:" << (1ull << id) * (2 * (1ull << n) + n) << endl;
+    cout << "Operations togo: " << (1ull << id) * (2 * (1ull << n) + n) << endl;
     for (size_t connectionMask = 0; connectionMask < (1ull << id); ++connectionMask) {
         if (connectionMask % 100 == 0) {
             cout << "\rCurrent function: " << 100. * connectionMask / (1ull << id)
