@@ -80,7 +80,6 @@ int main() {
     while (maxAns < (1u << (1u << n))) {
         size_t fNum = dist(gen);
         size_t num_ones = 0;
-        cin >> fNum;
         for (size_t i = 0; i < (1u << n); ++i) {
             num_ones += ((fNum) >> i) & 1u;
         }
