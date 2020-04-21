@@ -9,7 +9,8 @@
 #include <memory>
 #include <utility>
 
-class NoSuchExpressionType : std::exception {};
+class NoSuchExpressionType : std::exception {
+};
 
 enum OneArgumentExpressionType {
     NOT_EXPRESSION
@@ -22,11 +23,13 @@ enum TwoArgumentsExpressionType {
 
 class Expression {
 public:
-    virtual bool evaluate(bool *vars, size_t &key) const = 0;
+    virtual bool evaluate(bool *vars, size_t key) const = 0;
 
-    [[nodiscard]] virtual int countConnections() const = 0;
+    virtual void markConnections(size_t &id) = 0;
 
     [[nodiscard]] virtual std::string toString() const = 0;
+
+    size_t id;
 
     virtual ~Expression() = default;
 };
@@ -41,9 +44,9 @@ public:
 
     explicit ConstantExpression(bool value);
 
-    bool evaluate(bool *vars, size_t &key) const override;
+    bool evaluate(bool *vars, size_t key) const override;
 
-    [[nodiscard]] int countConnections() const override;
+    void markConnections(size_t &_id) override;
 
     [[nodiscard]] std::string toString() const override;
 
@@ -56,9 +59,9 @@ private:
 public:
     explicit VariableExpression(size_t myIndex);
 
-    bool evaluate(bool *vars, size_t &key) const override;
+    bool evaluate(bool *vars, size_t key) const override;
 
-    [[nodiscard]] int countConnections() const override;
+    void markConnections(size_t &id) override;
 
     [[nodiscard]] std::string toString() const override;
 
@@ -73,9 +76,9 @@ private:
 public:
     OneArgumentExpression(OneArgumentExpressionType type, ExpressionPtr argument);
 
-    bool evaluate(bool *vars, size_t &key) const override;
+    bool evaluate(bool *vars, size_t key) const override;
 
-    [[nodiscard]] int countConnections() const override;
+    void markConnections(size_t &id) override;
 
     [[nodiscard]] std::string toString() const override;
 
@@ -91,9 +94,9 @@ public:
     TwoArgumentsExpression(TwoArgumentsExpressionType type, ExpressionPtr fist_argument,
                            ExpressionPtr second_argument);
 
-    bool evaluate(bool *vars, size_t &key) const override;
+    bool evaluate(bool *vars, size_t key) const override;
 
-    [[nodiscard]] int countConnections() const override;
+    void markConnections(size_t &id) override;
 
     [[nodiscard]] std::string toString() const override;
 

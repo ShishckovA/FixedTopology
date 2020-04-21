@@ -10,13 +10,11 @@ ConstantExpression::ConstantExpression(int value) : value(value) {}
 
 ConstantExpression::ConstantExpression(bool value) : value(value) {}
 
-bool ConstantExpression::evaluate(bool *vars, size_t &key) const {
+bool ConstantExpression::evaluate(bool *vars, size_t key) const {
     return value;
 }
 
-int ConstantExpression::countConnections() const {
-    return 0;
-}
+void ConstantExpression::markConnections(size_t &_id) {}
 
 std::string ConstantExpression::toString() const {
     return std::to_string(value);
@@ -26,13 +24,11 @@ std::string ConstantExpression::toString() const {
 // --------------------- VariableExpression --------------------- //
 VariableExpression::VariableExpression(size_t myIndex) : myIndex(myIndex) {}
 
-bool VariableExpression::evaluate(bool *vars, size_t &key) const {
+bool VariableExpression::evaluate(bool *vars, size_t key) const {
     return vars[myIndex];
 }
 
-int VariableExpression::countConnections() const {
-    return 0;
-}
+void VariableExpression::markConnections(size_t &_id) {}
 
 std::string VariableExpression::toString() const {
     return "x_" + std::to_string(myIndex);
@@ -45,7 +41,7 @@ OneArgumentExpression::OneArgumentExpression(OneArgumentExpressionType type, Exp
                                                                                                                std::move(
                                                                                                                        argument)) {}
 
-bool OneArgumentExpression::evaluate(bool *vars, size_t &key) const {
+bool OneArgumentExpression::evaluate(bool *vars, size_t key) const {
     if (type == NOT_EXPRESSION) {
         return !(argument->evaluate(vars, key));
     } else {
@@ -53,8 +49,8 @@ bool OneArgumentExpression::evaluate(bool *vars, size_t &key) const {
     }
 }
 
-int OneArgumentExpression::countConnections() const {
-    return argument->countConnections();
+void OneArgumentExpression::markConnections(size_t &_id) {
+    argument->markConnections(_id);
 }
 
 std::string OneArgumentExpression::toString() const {
@@ -67,24 +63,20 @@ TwoArgumentsExpression::TwoArgumentsExpression(TwoArgumentsExpressionType type, 
                                                ExpressionPtr second_argument) :
         type(type), first_argument(std::move(fist_argument)), second_argument(std::move(second_argument)) {}
 
-bool TwoArgumentsExpression::evaluate(bool *vars, size_t &key) const {
-    if ((type == OR_EXPRESSION) ^ (key % 2)) {
-        key /= 2;
-        bool first_val = first_argument->evaluate(vars, key);
-        bool second_val = second_argument->evaluate(vars, key);
-        return first_val || second_val;
-    } else if ((type == AND_EXPRESSION) ^ (key % 2)) {
-        key /= 2;
-        bool first_val = first_argument->evaluate(vars, key);
-        bool second_val = second_argument->evaluate(vars, key);
-        return first_val && second_val;
+bool TwoArgumentsExpression::evaluate(bool *vars, size_t key) const {
+    if ((type == OR_EXPRESSION) ^ ((key >> id) & 1u)) {
+        return first_argument->evaluate(vars, key) || second_argument->evaluate(vars, key);
+    } else if ((type == AND_EXPRESSION) ^ ((key >> id) & 1u)) {
+        return first_argument->evaluate(vars, key) && second_argument->evaluate(vars, key);
     } else {
         throw (NoSuchExpressionType());
     }
 }
 
-int TwoArgumentsExpression::countConnections() const {
-    return first_argument->countConnections() + second_argument->countConnections() + 1;
+void TwoArgumentsExpression::markConnections(size_t &_id) {
+    id = _id++;
+    first_argument->markConnections(_id);
+    second_argument->markConnections(_id);
 }
 
 std::string TwoArgumentsExpression::toString() const {

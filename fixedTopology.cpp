@@ -48,10 +48,12 @@ int work_with(const ExpressionPtr &function) {
         val = false;
     }
     size_t ans = 0;
-    size_t numberOfConnections = function->countConnections();
-    for (size_t connectionMask = 0; connectionMask < (1u << numberOfConnections); ++connectionMask) {
+    size_t id = 0;
+    function->markConnections(id);
+    cout << "Operations togo:" << (1u << id) * (n + 2 * (1u << n)) << endl;
+    for (size_t connectionMask = 0; connectionMask < (1u << id); ++connectionMask) {
         if (connectionMask % 100 == 0) {
-            cout << "\rCurrent function: " << 100. * connectionMask / (1u << numberOfConnections)
+            cout << "\rCurrent function: " << 100. * connectionMask / (1u << id)
                  << "%, and result is already " << ans << "...";
             cout.flush();
         }
@@ -92,7 +94,8 @@ int main() {
             maxAns = ww;
             cout << "New max ans! " << ww << endl << endl << endl;
         }
-        string command = "python ./server/sender.py --children " + to_string(maxAns) + " --function \"" + f->toString() +
+        string command =
+                "python ./server/sender.py --children " + to_string(maxAns) + " --function \"" + f->toString() +
                 "\" --function_number " + to_string(fNum);
         int result = system(command.c_str());
         if (result) {
