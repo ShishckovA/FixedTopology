@@ -1,0 +1,1 @@
+for /L %%a IN (1,1,9) DO start bin\fixedTopology && ping –n 2 localhost > nul 
