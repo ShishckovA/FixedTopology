@@ -8,17 +8,17 @@ using namespace std;
 const size_t n = 4;
 
 std::mt19937 gen(time(nullptr));
-std::uniform_int_distribution<size_t> dist(1, (1u << (1u << n)) - 1);
+std::uniform_int_distribution<size_t> dist(1, (1ull << (1ull << n)) - 1);
 
 ExpressionPtr build_sdnf(size_t func_num) {
     ExpressionPtr ans;
     bool setAns = false;
-    for (size_t set_num = 0; set_num < (1u << n); ++set_num) {
-        if (((func_num >> set_num) & 1u) == 0) continue;
+    for (size_t set_num = 0; set_num < (1ull << n); ++set_num) {
+        if (((func_num >> set_num) & 1ull) == 0) continue;
         ExpressionPtr block[n];
         for (size_t var = 0; var < n; ++var) {
             size_t var_ind = n - var - 1;
-            if ((set_num >> var) & 1u) {
+            if ((set_num >> var) & 1ull) {
                 block[var_ind] = Variable(var_ind);
             } else {
                 block[var_ind] = Not(Variable(var_ind));
@@ -42,7 +42,7 @@ ExpressionPtr build_sdnf(size_t func_num) {
 }
 
 int work_with(const ExpressionPtr &function) {
-    bool got_functions[(1u << (1u << n))];
+    bool got_functions[(1ull << (1ull << n))];
     bool vars[n];
     for (bool &val : got_functions) {
         val = false;
@@ -50,18 +50,19 @@ int work_with(const ExpressionPtr &function) {
     size_t ans = 0;
     size_t id = 0;
     function->markConnections(id);
-    cout << "Operations togo:" << (1u << id) * (n + 2 * (1u << n)) << endl;
-    for (size_t connectionMask = 0; connectionMask < (1u << id); ++connectionMask) {
+    cout << id << endl;
+    cout << "Operations togo:" << (1ull << id) * (2 * (1ull << n) + n) << endl;
+    for (size_t connectionMask = 0; connectionMask < (1ull << id); ++connectionMask) {
         if (connectionMask % 100 == 0) {
-            cout << "\rCurrent function: " << 100. * connectionMask / (1u << id)
+            cout << "\rCurrent function: " << 100. * connectionMask / (1ull << id)
                  << "%, and result is already " << ans << "...";
             cout.flush();
         }
         size_t func_num = 0;
-        for (size_t varsMask = 0; varsMask < (1u << n); ++varsMask) {
+        for (size_t varsMask = 0; varsMask < (1ull << n); ++varsMask) {
             size_t connectionMaskCopy = connectionMask;
             for (size_t i = 0; i < n; ++i) {
-                vars[i] = (varsMask >> i) & 1u;
+                vars[i] = (varsMask >> i) & 1ull;
             }
             bool evaled = function->evaluate(vars, connectionMaskCopy);
             func_num = func_num | (static_cast<unsigned int>(evaled) << varsMask);
@@ -80,6 +81,7 @@ int main() {
     while (maxAns < (1u << (1u << n))) {
         size_t fNum = dist(gen);
         size_t num_ones = 0;
+        cin >> fNum;
         for (size_t i = 0; i < (1u << n); ++i) {
             num_ones += ((fNum) >> i) & 1u;
         }
