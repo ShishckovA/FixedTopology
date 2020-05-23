@@ -2,7 +2,7 @@ from flask import Flask, request
 import json
 
 app = Flask(__name__)
-host = "192.168.100.9"
+host = "ec2-35-180-37-41.eu-west-3.compute.amazonaws.com"
 
 
 @app.route('/')

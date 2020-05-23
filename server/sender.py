@@ -11,7 +11,7 @@ parser.add_argument("-n", "--function_number", required=True,
                     help="")
 
 args = parser.parse_args()
-host = "192.168.100.9"
+host = "ec2-35-180-37-41.eu-west-3.compute.amazonaws.com"
 port = "5000"
 url = "http://{}:{}/set".format(host, port)
 
