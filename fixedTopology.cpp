@@ -2,6 +2,7 @@
 #include <random>
 #include <ctime>
 #include "expressionses.h"
+#include <fstream>
 
 using namespace std;
 
@@ -75,6 +76,23 @@ int work_with(const ExpressionPtr &function) {
     return ans;
 }
 
+void write_to_file(int num) {
+    ofstream fout;
+    fout.open("BEST.txt");
+    fout << num << endl;
+    fout.close();
+}
+
+int read_from_file() {
+    ifstream fin;
+    fin.open("BEST.txt");
+
+    int num;
+    fin >> num;
+    fin.close();
+    return num;
+}
+
 int main() {
     int maxAns = 0;
     while (maxAns < (1u << (1u << n))) {
@@ -90,9 +108,17 @@ int main() {
         cout << f->toString() << endl;
         cout << "function number: " << fNum << endl;
         int ww = work_with(f);
-        if (ww > maxAns) {
+        int best = 0;
+        try {
+            best = read_from_file();
+        } catch (...) {
+            write_to_file(0);
+            best = 0;
+        }
+        if (ww > best) {
             maxAns = ww;
             cout << "New max ans! " << ww << endl << endl << endl;
+            write_to_file(ww);
         }
         string command =
                 "python ./server/sender.py --children " + to_string(maxAns) + " --function \"" + f->toString() +
