@@ -4,3 +4,4 @@ project(FixedTopology)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(FixedTopology fixedTopology.cpp expressionses.cpp expressionses.h)
+add_executable(FixedTopology_count fixedTopology2.cpp expressionses.cpp expressionses.h)
